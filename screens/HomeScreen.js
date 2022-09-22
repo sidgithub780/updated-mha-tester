@@ -14,13 +14,17 @@ import {
   PermissionsAndroid,
   FlatList,
   TouchableOpacity,
+  Button,
 } from 'react-native';
 
 // import CallLogs API
 import CallLogs from 'react-native-call-log';
+import NetInfo from '@react-native-community/netinfo';
+
+import {addCalls} from '../functions/Links';
 
 const HomeScreen = ({navigation}) => {
-  const [listData, setListDate] = useState([]);
+  const [listData, setListData] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +42,11 @@ const HomeScreen = ({navigation}) => {
             },
           );
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            CallLogs.loadAll().then(c => setListDate(c));
+            NetInfo.fetch().then(state => {
+              console.log('Connection type', state.type);
+              console.log('Is connected?', state.isConnected);
+            });
+            CallLogs.loadAll().then(c => setListData(c));
             CallLogs.load(3).then(c => console.log(c));
           } else {
             alert('Call Log permission denied');
@@ -94,6 +102,26 @@ const HomeScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
+        <Button
+          title="Refresh"
+          onPress={async () => {
+            try {
+              await addCalls(
+                999,
+                listData[0].dateTime,
+                listData[0].duration,
+                234234232423423,
+                listData[0].phoneNumber,
+                'OUTGOING',
+                listData[0].rawType,
+              );
+
+              alert('done');
+            } catch (e) {
+              console.log(e);
+            }
+          }}
+        />
         <Text style={styles.titleText}>Call Logs</Text>
         <TouchableOpacity
           onPress={() => {

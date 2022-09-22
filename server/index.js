@@ -16,8 +16,31 @@ app.post('/person', async (req, res) => {
       [name, id, home_number, mobile_number],
     );
     res.json(newPerson.rows);
+    console.log('sent');
   } catch (e) {
     console.log(e.message);
+  }
+});
+
+app.post('/calls', async (req, res) => {
+  try {
+    const {
+      user_id,
+      time,
+      duration,
+      friend_phone,
+      rawtype,
+      call_type,
+      friend_id,
+    } = req.body;
+    const newCall = await pool.query(
+      'INSERT INTO calls (user_id, time, duration, friend_phone, rawtype, call_type, friend_id) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [user_id, time, duration, friend_phone, rawtype, call_type, friend_id],
+    );
+
+    console.log(res.json(newCall.rows));
+  } catch (e) {
+    console.log(e);
   }
 });
 
@@ -29,6 +52,15 @@ app.get('/person', async (req, res) => {
     res.json(allPersons.rows);
   } catch (e) {
     console.log(e.message);
+  }
+});
+
+app.get('/calls', async (req, res) => {
+  try {
+    const allCalls = await pool.query('SELECT * FROM calls');
+    res.json(allCalls.rows);
+  } catch (e) {
+    console.log(e);
   }
 });
 
