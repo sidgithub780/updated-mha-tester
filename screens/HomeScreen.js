@@ -23,12 +23,14 @@ import NetInfo from '@react-native-community/netinfo';
 
 import {addCalls} from '../functions/Links';
 
+import axios from 'axios';
+
 const HomeScreen = ({navigation}) => {
   const [listData, setListData] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      if (Platform.OS != 'ios') {
+      if (Platform.OS !== 'ios') {
         try {
           //Ask for runtime permission
           const granted = await PermissionsAndroid.request(
@@ -60,7 +62,19 @@ const HomeScreen = ({navigation}) => {
         );
       }
     }
+
+    // WORKS FINE IF YOU HANDLED CORS CORRECTLY IN THE SERVER SIDE
+
+    async function getUserData() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8921/calls');
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
     fetchData();
+    getUserData();
   }, []);
 
   const ItemView = ({item}) => {
@@ -105,21 +119,17 @@ const HomeScreen = ({navigation}) => {
         <Button
           title="Refresh"
           onPress={async () => {
-            try {
-              await addCalls(
-                999,
-                listData[0].dateTime,
-                listData[0].duration,
-                234234232423423,
-                listData[0].phoneNumber,
-                'OUTGOING',
-                listData[0].rawType,
-              );
+            await addCalls(
+              77777,
+              '2011-01-01 00:00:00',
+              7777777,
+              77777777,
+              234,
+              'OUTGOING',
+              77777777,
+            );
 
-              alert('done');
-            } catch (e) {
-              console.log(e);
-            }
+            alert('done');
           }}
         />
         <Text style={styles.titleText}>Call Logs</Text>
